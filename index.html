@@ -5,22 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalkulator Pozycji</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="login.css">
 </head>
 <body>
 
+    <!-- Modal Logowania -->
     <div id="loginModal" class="modal">
         <div class="modal-content login-modal-content">
-            <h2><span class="topfund-brand">Kalkulator</span> <span class="terminal-text">Pozycji</span></h2>
+            <h2><span class="app-brand">Kalkulator Pozycji</span> <span class="app-subtitle">Logowanie</span></h2>
             <form id="loginForm">
                 <input type="text" id="loginUsername" placeholder="Nazwa użytkownika" required>
                 <input type="password" id="loginPassword" placeholder="Hasło" required>
                 <button type="submit">Zaloguj</button>
             </form>
-            <p id="loginError" style="color: red; margin-top: 10px;"></p>
+            <p id="loginError" style="color: #ff4d4d; margin-top: 15px;"></p>
         </div>
     </div>
 
+    <!-- Główny kontener aplikacji (początkowo ukryty) -->
     <div id="app" class="hidden">
         <h1>Kalkulator Pozycji</h1>
         <div class="main-container">
@@ -63,6 +64,11 @@
             </div>
         </div>
     </div>
-    <script type="module" src="script.js"></script>
+
+    <!-- Importy Firebase i skryptu aplikacji -->
+    <script src="https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js" type="module"></script>
+    <script src="script.js" type="module"></script>
+
 </body>
 </html>
