@@ -16,8 +16,8 @@ const db = getFirestore(app);
 async function hashPassword(password) {
     const textEncoder = new TextEncoder();
     const data = textEncoder.encode(password);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashBuffer = crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(await hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
@@ -80,9 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (userData.hashedPassword === hashedPassword) {
                 localStorage.setItem('lastUsername', username);
                 loginModal.classList.add('hidden');
-                appContainer.classList.remove('hidden');
-                document.body.classList.add('app-loaded'); // Add class to trigger animations
-                initApp();
+                appContainer.classList.remove('hidden'); // Make app visible
+                initApp(); // Initialize immediately
+
             } else {
                 loginErrorElement.textContent = 'Nieprawidłowa nazwa użytkownika lub hasło.';
             }
@@ -94,7 +94,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function initApp() {
         loadCapitalFromStorage();
-        loadActivePreset();
+        // Load presets but don't calculate yet
+        loadActivePreset(false);
+
+        weightsCard.classList.remove('hidden');
+        weightsCard.classList.add('hidden-by-toggle');
+        toggleWeightsBtn.textContent = 'Pokaż wagi';
 
         [capitalInput, groupCountInput, positionCountInput, weightFactorInput].forEach(input => {
             input.addEventListener('input', () => {
@@ -108,7 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (input.id === 'capital') {
                     saveCapitalToStorage();
                 }
-                // Switch to custom preset on change
                 setActivePreset(customPresetBtn);
                 saveActivePreset('custom');
                 saveCustomSettings();
@@ -116,8 +120,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         toggleWeightsBtn.addEventListener('click', () => {
-            weightsCard.classList.toggle('hidden');
-            toggleWeightsBtn.textContent = weightsCard.classList.contains('hidden') ? 'Pokaż wagi' : 'Ukryj wagi';
+            weightsCard.classList.toggle('hidden-by-toggle');
+            toggleWeightsBtn.textContent = weightsCard.classList.contains('hidden-by-toggle') ? 'Pokaż wagi' : 'Ukryj wagi';
         });
 
         defaultPresetBtn.addEventListener('click', () => {
@@ -133,19 +137,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         customPresetBtn.addEventListener('click', () => {
-            loadCustomSettings();
+            loadCustomSettings(true);
             setActivePreset(customPresetBtn);
             saveActivePreset('custom');
         });
+
+        // Perform initial generation and calculation after everything is set up
+        generateWeightInputs();
+        calculate();
     }
 
-    function applyPreset(settings) {
+    function applyPreset(settings, doCalculate = true) {
         groupCountInput.value = settings.groups;
         positionCountInput.value = settings.positions;
         weightFactorInput.value = settings.weightFactor;
         [groupCountInput, positionCountInput, weightFactorInput].forEach(updateSliderBackground);
-        generateWeightInputs();
-        calculate();
+        
+        if (doCalculate) {
+            generateWeightInputs();
+            calculate();
+        }
     }
 
     function setActivePreset(activeBtn) {
@@ -240,20 +251,20 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('activePreset', preset);
     }
 
-    function loadActivePreset() {
+    function loadActivePreset(doCalculate = true) {
         const activePreset = localStorage.getItem('activePreset') || 'default';
         saveActivePreset(activePreset);
         switch (activePreset) {
             case 'aggressive':
-                applyPreset(aggressiveSettings);
+                applyPreset(aggressiveSettings, doCalculate);
                 setActivePreset(aggressivePresetBtn);
                 break;
             case 'custom':
-                loadCustomSettings();
+                loadCustomSettings(doCalculate);
                 setActivePreset(customPresetBtn);
                 break;
             default:
-                applyPreset(defaultSettings);
+                applyPreset(defaultSettings, doCalculate);
                 setActivePreset(defaultPresetBtn);
                 break;
         }
@@ -268,13 +279,12 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('customSettings', JSON.stringify(customSettings));
     }
 
-    function loadCustomSettings() {
+    function loadCustomSettings(doCalculate = true) {
         const savedSettings = JSON.parse(localStorage.getItem('customSettings'));
         if (savedSettings) {
-            applyPreset(savedSettings);
+            applyPreset(savedSettings, doCalculate);
         } else {
-            // If no custom settings, load default
-            applyPreset(defaultSettings);
+            applyPreset(defaultSettings, doCalculate);
         }
     }
 });
