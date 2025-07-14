@@ -1,9 +1,14 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 body {
     background-color: #121212;
     color: #e0e0e0;
     font-family: sans-serif;
     margin: 0;
     padding: 2rem;
+    overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 h1 {
@@ -27,6 +32,7 @@ h1 {
     gap: 2rem;
     align-items: flex-start;
     flex-wrap: wrap; /* Allow wrapping for mobile */
+    width: 100%;
 }
 
 .left-column {
@@ -64,6 +70,7 @@ h1 {
     margin-bottom: 1.5rem;
     display: flex;
     gap: 1rem;
+    flex-wrap: wrap; /* Allow buttons to wrap */
 }
 
 .preset-btn {
@@ -106,7 +113,6 @@ h1 {
     background-color: #252525;
     color: #e0e0e0;
     width: 100%;
-    box-sizing: border-box;
 }
 
 .input-group input[type="range"] {
@@ -222,7 +228,7 @@ h1 {
     }
     .left-column, .results-card {
         width: 100%;
-        max-width: none;
+        max-width: 100%; /* Ensure it doesn't exceed screen width */
     }
 }
 
@@ -270,7 +276,6 @@ h1 {
 .modal-content input {
     width: 100%;
     padding: 0.75rem;
-    box-sizing: border-box;
 }
 
 .btn-primary {
