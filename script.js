@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const positionCountValue = document.getElementById('positionCountValue');
         const weightFactorValue = document.getElementById('weightFactorValue');
 
-        const defaultSettings = { groups: 6, positions: 3, weightFactor: 20 };
+        const defaultSettings = { groups: 6, positions: 3, weightFactor: 16 };
         const aggressiveSettings = { groups: 6, positions: 1, weightFactor: 35 };
 
         loadCapitalFromStorage();
@@ -225,6 +225,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function formatInt(value) {
+        const rounded = Math.round(Number(value) || 0);
+        return rounded.toLocaleString('pl-PL');
+    }
+
     function calculate() {
         const capitalInput = document.getElementById('capital');
         const groupCountInput = document.getElementById('groupCount');
@@ -266,10 +271,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const title = document.createElement('h3');
             title.textContent = `Grupa ${i + 1}`;
             const total = document.createElement('p');
-            total.innerHTML = `Całkowity kapitał: <span class="amount">${groupCapital.toFixed(2)}</span> USD`;
+            total.innerHTML = `Całkowity kapitał: <span class="amount">${formatInt(groupCapital)}</span> USD`;
             const position = document.createElement('p');
             const positionLabel = positionCount > 1 ? `Pozycje ${positionStart}-${positionEnd}` : `Pozycja ${positionStart}`;
-            position.innerHTML = `${positionLabel}: <span class="amount">${positionSize.toFixed(2)}</span> USD`;
+            position.innerHTML = `${positionLabel}: <span class="amount">${formatInt(positionSize)}</span> USD`;
             card.appendChild(title);
             card.appendChild(total);
             card.appendChild(position);
@@ -280,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateSliderBackground(slider) {
         const percentage = (slider.value - slider.min) / (slider.max - slider.min) * 100;
-        slider.style.background = `linear-gradient(to right, #fd7e14 ${percentage}%, #444 ${percentage}%)`;
+        slider.style.background = `linear-gradient(to right, ${getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim() || '#FFD700'} ${percentage}%, #444 ${percentage}%)`;
     }
 
     function saveCapitalToStorage() {
@@ -306,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const aggressivePresetBtn = document.getElementById('aggressivePreset');
         const customPresetBtn = document.getElementById('customPreset');
         const defaultPresetBtn = document.getElementById('defaultPreset');
-        const defaultSettings = { groups: 6, positions: 3, weightFactor: 20 };
+        const defaultSettings = { groups: 6, positions: 3, weightFactor: 16 };
         const aggressiveSettings = { groups: 6, positions: 1, weightFactor: 35 };
 
         switch (activePreset) {
